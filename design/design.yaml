@@ -1,0 +1,114 @@
+# design.yaml
+node_ref: &node_ref {}
+node_attrs:
+  shape: box
+nodes:
+  user:
+    label: User
+    rank: 1
+    _to:
+       analyzeInput: *node_ref
+    _description: >
+      The user is the client in the rest-model
+
+  analyzeInput:
+    label: Analyze Input
+    rank: 2
+    _to:
+      security: *node_ref
+      analyzeQuery: *node_ref
+      userContext: *node_ref
+      response: *node_ref
+    _description: >
+      Analyzing the input is determining the semantics of the request
+
+  security:
+    label: Security/ Authorization
+    rank: 2
+    _description: >
+      Most likely using OAuth?
+
+  analyzeQuery:
+    label: Analyze Query
+    rank: 3
+    _to:
+      choiceFunction: *node_ref
+    _description: >
+      NLP techniques are applied to the query and the results are fed to a
+      choice function
+
+  userContext:
+    label: Context
+    rank: 3
+    shape: ellipse
+    _to:
+      choiceFunction: *node_ref
+    _description: >
+      Context of the dialog is passed from the user to the choice function
+
+  choiceFunction:
+    label: Choose Next
+    rank: 4
+    _to:
+      answer: *node_ref
+      delegate: *node_ref
+      refine: *node_ref
+      feedback: *node_ref
+    _description: >
+      Here the analysis of the query and the context of the dialogue is
+      synthesized into a choice for the bot to make
+
+  answer:
+    label: Answer
+    rank: 5
+    _to:
+      response: *node_ref
+    _description:
+      When the bot determines that it can provide a suitable response to
+      the user it will directly provide an answer
+
+  delegate:
+    label: Delegate Response
+    rank: 5
+    _to:
+      response: *node_ref
+    _description:
+      When the bot determines that an attached service can provide a
+      suitable response to the user it will delegate the answer to that
+      service
+
+  feedback:
+    label: Feedback
+    rank: 5
+    _to:
+      response: *node_ref
+    _description:
+      Depending on the bot's model and state of the dialogue, it may seek
+      feedback from the user to improve itself
+
+  refine:
+    label: Refine Query
+    rank: 5
+    _to:
+      response: *node_ref
+    _description:
+      When the bot determines that the most advantageous step is to refine
+      the query then it will ask the user to do so
+
+  response:
+    label: Generate Response
+    rank: 6
+    _to:
+      updateContext: *node_ref
+      user: *node_ref
+    _description:
+      Depending on the result of the choice function, the capabilities of
+      the user and context of the dialogue the bot will generate an
+      appropriate response
+
+  updateContext:
+    label: Update Context
+    rank: 6
+    _description:
+      Generating the response has the side effect of updating relevant
+      context
