@@ -8,5 +8,5 @@ all that's done, you can view the results in a browser.
 
 # USAGE
 
-make run
-firefox index.html
+* make run
+* firefox index.html
